@@ -1,0 +1,79 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "rm -f .vbox_version",
+        "rm -f VBoxGuestAdditions_*.iso",
+        "rm -f /etc/udev/rules.d/70-persistent-net.rules",
+        "apt-get update",
+        "apt-get install -y curl dhcpcd lsb-release sudo wget",
+        "apt-get remove -y --purge dhcp3-client dhcp3-common"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "files/fstab",
+      "destination": "/etc/fstab"
+    },
+    {
+      "type": "file",
+      "source": "files/dhcpcd",
+      "destination": "/etc/default/dhcpcd"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "passwd --delete root && passwd --lock root"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "virtualbox",
+      "boot_command": [
+        "<esc><wait>",
+        "install <wait>",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <wait>",
+        "debian-installer=en_US <wait>",
+        "auto <wait>",
+        "locale=en_US <wait>",
+        "kbd-chooser/method=us <wait>",
+        "netcfg/get_hostname={{ .Name }} <wait>",
+        "netcfg/get_domain=vagrantup.com <wait>",
+        "fb=false <wait>",
+        "debconf/frontend=noninteractive <wait>",
+        "console-setup/ask_detect=false <wait>",
+        "console-keymaps-at/keymap=us <wait>",
+        "<enter><wait>"
+      ],
+      "boot_wait": "10s",
+      "disk_size": 10140,
+      "guest_os_type": "Debian_64",
+      "http_directory": "http",
+      "iso_md5": "0e5f0126e271ead360cd10dc0833569a",
+      "iso_url": "http://cdimage.debian.org/cdimage/archive/5.0.10/amd64/iso-cd/debian-5010-amd64-netinst.iso",
+      "ssh_username": "root",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "halt -p",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "256"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "1"
+        ]
+      ]
+    }
+  ]
+}

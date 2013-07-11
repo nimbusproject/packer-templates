@@ -1,0 +1,5 @@
+deb http://mirror.mcs.anl.gov/debian squeeze main
+deb-src http://mirror.mcs.anl.gov/debian squeeze main
+
+deb http://security.debian.org/ squeeze/updates main
+deb-src http://security.debian.org/ squeeze/updates main
