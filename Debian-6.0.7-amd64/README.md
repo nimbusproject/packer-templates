@@ -3,7 +3,8 @@ amd64 (6.0.7).
 
 The process is a bit convoluted because our cloud platform boots virtual
 machines with a 2.6.18 kernel from RHEL 5 which is not compatible with
-recent versions of udev, including the one in Squeeze.
+recent versions of udev, including the one in Squeeze (see
+https://bugs.launchpad.net/ubuntu/+source/udev/+bug/397187).
 Thus, the template was created from veewee template
 Debian-5.0.10-amd64-netboot and modified as follows.
 
