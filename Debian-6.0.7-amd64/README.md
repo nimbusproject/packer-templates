@@ -31,10 +31,12 @@ we hold udev to the Lenny package, update sources.list to use the
 Squeeze repository, and run apt-get dist-upgrade with the options
 required for a fully non interactive upgrade.
 
-Finally, the script ../common/vmdk-to-raw.sh is used to:
+Finally, the scripts ../common/vmdk-to-raw.sh and
+../common/vmdk-to-xen-raw.sh are used to convert the packer-disk1.vmdk
+VMDK file to KVM and Xen images, respectively. They do so by:
 
-* convert the packer-disk1.vmdk file from VMDK to raw format
-* strip the MBR from it, resulting in a file containing only the root partition
-* compress the resulting image
+* converting the packer-disk1.vmdk file from VMDK to raw format
+* only for vmdk-to-xen-raw.sh: removing the MBR from it, resulting in a file containing only the root partition
+* compressing the resulting image using gzip
 
 qemu-img is required to run this script.

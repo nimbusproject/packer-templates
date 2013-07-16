@@ -22,10 +22,12 @@ template.json had the vmware builder removed and was changed to:
 * install a custom fstab that uses rootfs instead of a hardcoded partition name
 * remove the root password so that only SSH keys can be used
 
-Finally, the script ../common/vmdk-to-raw.sh is used to:
+Finally, the scripts ../common/vmdk-to-raw.sh and
+../common/vmdk-to-xen-raw.sh are used to convert the packer-disk1.vmdk
+VMDK file to KVM and Xen images, respectively. They do so by:
 
-* convert the packer-disk1.vmdk file from VMDK to raw format
-* strip the MBR from it, resulting in a file containing only the root partition
-* compress the resulting image
+* converting the packer-disk1.vmdk file from VMDK to raw format
+* only for vmdk-to-xen-raw.sh: removing the MBR from it, resulting in a file containing only the root partition
+* compressing the resulting image using gzip
 
-qemu-img is required to run this script.
+qemu-img is required to run these scripts.
