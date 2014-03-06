@@ -1,0 +1,99 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo 'ubuntu' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "rm -f /home/ubuntu/.vbox_version",
+        "rm -f /home/ubuntu/VBoxGuestAdditions*.iso",
+        "rm -f /etc/udev/rules.d/70-persistent-net.rules"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "files/fstab",
+      "destination": "/home/ubuntu/fstab"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'ubuntu' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "mv /home/ubuntu/fstab /etc/fstab",
+        "chown root:root /etc/fstab"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'ubuntu' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "apt-get update",
+        "env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::='--force-confnew' -q --force-yes -y dist-upgrade",
+        "apt-get install -y curl dhcpcd lsb-release vim wget",
+        "apt-get remove -y --purge isc-dhcp-client isc-dhcp-common",
+        "apt-get autoremove -y"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "files/dhcpcd",
+      "destination": "dhcpcd"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'ubuntu' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "mv /home/ubuntu/dhcpcd /etc/default/dhcpcd",
+        "chown root:root /etc/default/dhcpcd"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'ubuntu' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "passwd --delete root && passwd --lock root"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "boot_command": [
+        "<esc><esc><enter><wait>",
+        "/install/vmlinuz noapic preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <wait>",
+        "debian-installer=en_US auto locale=en_US kbd-chooser/method=us <wait>",
+        "hostname={{ .Name }} <wait>",
+        "fb=false debconf/frontend=noninteractive <wait>",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA keyboard-configuration/variant=USA console-setup/ask_detect=false <wait>",
+        "initrd=/install/initrd.gz -- <enter><wait>"
+      ],
+      "boot_wait": "4s",
+      "disk_size": 2048,
+      "guest_os_type": "Ubuntu_64",
+      "http_directory": "http",
+      "iso_checksum": "e83adb9af4ec0a039e6a5c6e145a34de",
+      "iso_checksum_type": "md5",
+      "iso_url": "http://releases.ubuntu.com/12.04/ubuntu-12.04.4-server-amd64.iso",
+      "ssh_username": "ubuntu",
+      "ssh_password": "ubuntu",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "echo 'passwd --delete ubuntu && passwd --lock ubuntu && rm -f shutdown.sh && shutdown -P now' > shutdown.sh; echo 'ubuntu' | sudo -S sh 'shutdown.sh'",
+      "virtualbox_version_file": "/home/ubuntu/.vbox_version",
+      "vm_name": "hello-cloud",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "512"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "1"
+        ]
+      ]
+    }
+  ]
+}
