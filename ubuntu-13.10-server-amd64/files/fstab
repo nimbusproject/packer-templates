@@ -1,0 +1,5 @@
+# /etc/fstab: static file system information.
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+LABEL=rootfs	/	        ext3	errors=remount-ro	0	1
+proc		/proc	        proc	defaults	0	0
